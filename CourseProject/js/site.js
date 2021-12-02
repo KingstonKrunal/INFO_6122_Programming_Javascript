@@ -13,29 +13,29 @@ clearButton.append(document.createTextNode("Clear"));
 clearButton.style.fontSize = "20px";
 clearButton.style.backgroundColor = "lightgray";
 
-// on button click event
+// on button click invoke clearButtonEvent
 clearButton.addEventListener("click", clearButtonEvent);
 
 // creating input text field
-const inputData = document.createElement("input");
-inputData.setAttribute("type", "text");
-inputData.id = "inputData";
-inputData.style.marginLeft = "20px";
-inputData.style.width = "300px";
-inputData.style.height = "40px";
-inputData.style.fontSize = "24px";
+const inputElement = document.createElement("input");
+inputElement.setAttribute("type", "text");
+inputElement.id = "inputElement";
+inputElement.style.marginLeft = "20px";
+inputElement.style.width = "300px";
+inputElement.style.height = "40px";
+inputElement.style.fontSize = "24px";
 
-inputData.addEventListener("keyup", function (event) {
-    if (event.keyCode === 13) {
-        event.preventDefault();
-        inputDataFunction(inputData.value);
-        // console.log(inputData.value);
+// adding an event listener on input text element
+inputElement.addEventListener("keyup", function ({keyCode}) {
+    // key code 13 is for enter
+    if (keyCode === 13) {
+        inputElementFunction(inputElement.value);
     }
 })
 
 // adding button and input filed to buttonDiv and buttonDiv to body
 buttonDiv.appendChild(clearButton);
-buttonDiv.appendChild(inputData);
+buttonDiv.appendChild(inputElement);
 document.body.appendChild(buttonDiv);
 
 // Create division for table
@@ -45,7 +45,7 @@ tableDiv.style.margin = "10px"
 
 // Create table
 const table = document.createElement("table");
-table.id = "myTable";
+table.id = "spreadsheet";
 table.style.border = "solid";
 table.style.borderCollapse = "collapse";
 table.style.fontSize = "20px";
@@ -55,108 +55,132 @@ const tableBody = document.createElement("tbody");
 tableBody.id = "tBody";
 table.appendChild(tableBody);
 
-let numericColumnValue = -1; // count for numeric column
-let alphabeticColumnArray = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]; // array for alphabetic column
-let arrayCount = -1; // count for array
-let cellId = "";
+// selectedCellID will store cell ID value
+let selectedCellID = null;
 
 // loop for creating table row and column with it's data
-for (let i = 0; i < 11; i++) {
-    const tr = document.createElement("tr");
-    tableBody.appendChild(tr);
+function createTable() {
+    let numericColumnValue = -1; // count for numeric column
+    let alphabeticColumnArray = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]; // array for alphabetic column
+    let arrayCount = -1; // count for array
 
-    numericColumnValue++;
+    for (let i = 0; i < 11; i++) {
+        // creating a table raw element
+        const tr = document.createElement("tr");
+        tableBody.appendChild(tr);
 
-    for (let j = 0; j < 11; j++) {
-        const td = document.createElement("td");
+        numericColumnValue++; // plus 1 increment
 
-        td.style.width = "150px";
-        td.style.height = "50px";
-        td.style.textAlign = "center";
-        td.style.border = "solid";
+        for (let j = 0; j < 11; j++) {
+            // creating a table data element
+            const td = document.createElement("td");
 
-        // for 1st column
-        if (j === 0) {
-            td.style.width = "50px";
+            td.style.width = "150px";
+            td.style.height = "50px";
+            td.style.textAlign = "center";
+            td.style.border = "solid";
+
+            // for 1st column
+            if (j === 0) {
+                td.style.width = "50px";
+            }
+
+            // for 1st column except 1st row
+            if (i !== 0 && j === 0) {
+                td.appendChild(document.createTextNode(numericColumnValue.toString()));
+                td.style.backgroundColor = "lightgray";
+            }
+
+            // for 1st row except 1st column
+            if (i === 0 && j !== 0) {
+                td.style.fontWeight = "bolder";
+                arrayCount++;
+
+                td.appendChild(document.createTextNode(alphabeticColumnArray[arrayCount]));
+                td.style.backgroundColor = "lightgray";
+            }
+
+            // for table cell where row and column value is 0
+            if (i === 0 && j === 0) {
+                td.style.backgroundColor = "lightgray";
+            }
+
+            // for every table cell except 1st row and 1st column
+            if (i !== 0 && j !== 0) {
+                td.id = (alphabeticColumnArray[j - 1] + i); // setting up table cell id like A1, A2, A3...
+                td.style.borderColor = "blue";
+
+                // will invoke tableCellClick method on click
+                td.addEventListener("click", tableCellClick);
+            }
+
+            tr.appendChild(td); // add table data to table row
         }
-
-        // for 1st column except 1st row
-        if (i !== 0 && j === 0) {
-            td.appendChild(document.createTextNode(numericColumnValue.toString()));
-            td.style.backgroundColor = "lightgray";
-        }
-
-        // for 1st row except 1st column
-        if (i === 0 && j !== 0) {
-            td.style.fontWeight = "bolder";
-            arrayCount++;
-
-            td.appendChild(document.createTextNode(alphabeticColumnArray[arrayCount]));
-            td.style.backgroundColor = "lightgray";
-        }
-
-        // for table cell where row and column value is 0
-        if (i === 0 && j === 0) {
-            td.style.backgroundColor = "lightgray";
-        }
-
-        // for every table cell except 1st row and 1st column
-        if (i !== 0 && j !== 0) {
-            td.id = (alphabeticColumnArray[i-1] + j); // setting up table cell id like A1, A2, A3...
-            // console.log(td.id);
-            td.style.borderColor = "blue";
-
-            td.addEventListener("click", tableCellClick);
-        }
-
-        tr.appendChild(td); // add table data to table row
     }
 }
+
+createTable();
 
 // adding table to division and division to body
 tableDiv.appendChild(table);
 document.body.appendChild(tableDiv);
 
+let cellValues = {}; // map for getting two cell values
+
 // function to manipulate input field and table cell
-function inputDataFunction(data) {
+function inputElementFunction(data) {
     if (data.charAt(0) === "=") {
-        let firstId = data.charAt(1)+data.charAt(2);
-        let secondId = data.charAt(4)+data.charAt(5);
+        // =A10+B10 (format)
+        let result = data.toUpperCase().match(/[A-Za-z0-9]+/g);
 
-        console.log(firstId);
-        console.log(secondId);
+        let firstVal = document.getElementById(result[0]).textContent;
+        let secondVal = document.getElementById(result[1]).textContent;
 
-        let firstVal = document.getElementById("\"" + firstId.toString() + "\"").value;
-        let secondVal = document.getElementById("\"" + secondId.toString() + "\"").value;
-
-        console.log(firstVal);
-        console.log(secondVal);
-
-        document.getElementById(getCellId()).value = firstVal + secondVal;
-    }
-    else {
-        document.getElementById(getCellId()).innerHTML = data;
+        // this will set addition of two cell values
+        document.getElementById(selectedCellID).textContent = parseInt(firstVal) + parseInt(secondVal);
+    } else {
+        document.getElementById(selectedCellID).innerHTML = data;
     }
 
-    document.getElementById("inputData").value = "";
-    document.getElementById("inputData").blur();
+    inputElement.value = ""; // input text value set to empty
+    inputElement.blur(); // input text will be out of focus
 
-    document.getElementById(getCellId()).style.backgroundColor = "";
+    document.getElementById(selectedCellID).style.backgroundColor = ""; // background colour of cell will set to default after entering value
+
+    cellValues[selectedCellID] = data.toUpperCase();
 }
 
 // invoked whenever user click on table cell
 function tableCellClick() {
-    document.getElementById("inputData").focus();
-    cellId = this.id;
-    document.getElementById(cellId).style.backgroundColor = "yellow";
-}
+    // if selectedCellID is not null, background colour will set to null
+    if (selectedCellID !== null) {
+        document.getElementById(selectedCellID).style.backgroundColor = "";
+    }
 
-// return table cell ID
-function getCellId() {
-    return cellId;
+    inputElement.focus(); // on cell click input text element will be focused
+    selectedCellID = this.id;
+
+    // if cell has value, value will be set to input text otherwise it will set to empty
+    if (cellValues[selectedCellID] !== undefined) {
+        inputElement.value = cellValues[selectedCellID];
+    } else {
+        inputElement.value = "";
+    }
+
+    // cell background colour will set to yellow upon selection
+    document.getElementById(selectedCellID).style.backgroundColor = "yellow";
 }
 
 // remove all data from table
 function clearButtonEvent() {
-    document.getElementById("tBody").empty();
+    inputElement.value = "";
+
+    // clear all styling and values
+    for (let key of Object.keys(cellValues)) {
+        document.getElementById(key).textContent = "";
+        document.getElementById(key).style.backgroundColor = "";
+    }
+
+    document.getElementById(selectedCellID).style.backgroundColor = "";
+    cellValues = {};
 }
