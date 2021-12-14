@@ -1,0 +1,46 @@
+div#content {
+  background-color: bisque;
+  color: brown;
+  width: 60%;
+  margin: 0 auto;
+}
+
+h1.readInstruction {
+  color: darkgreen;
+  margin-bottom: 3em;
+}
+
+h2.penalty {
+  margin: 2em;
+  text-align: center;
+}
+
+img {
+  display: block;
+  width: 90%;
+  border: 2px solid gray;
+  background: gainsboro;
+  padding: 1em;
+  margin: 0 auto;
+  border-radius: 3px;
+}
+
+#formContent {
+  margin: 1em;
+}
+
+input {
+  margin: 0.5em 0;
+}
+
+label {
+  padding: 10px;
+}
+
+div > p {
+  padding: 1em;
+}
+
+h1 {
+  text-align: center;
+}

@@ -3,32 +3,6 @@ const cardContainerDiv = document.createElement("div");
 cardContainerDiv.className = "grid-container";
 cardContainerDiv.style.visibility = "hidden";
 
-// // Card 1
-// const cardDiv1 = document.createElement("div");
-// cardDiv1.className = "card grid-item";
-// cardDiv1.style.width = "18rem";
-//
-// const img1 = document.createElement("img");
-// img1.id = "img1";
-// img1.className = "card-img-top";
-// img1.alt = "img 1";
-// cardDiv1.appendChild(img1);
-//
-// const cardBody1 = document.createElement("div");
-// cardBody1.className = "card-body";
-//
-// const title1 = document.createElement("h5");
-// title1.className = "class-title";
-// cardBody1.appendChild(title1);
-//
-// const cardText1 = document.createElement("p");
-// cardText1.className = "card-text";
-// cardBody1.appendChild(cardText1);
-//
-// // append card body to card div
-// cardDiv1.appendChild(cardBody1);
-
-// "cardDiv1", "cardDiv2", "cardDiv3", "cardDiv4", "cardDiv5", "cardDiv6", "cardDiv7", "cardDiv8"
 let cardDivArray = [];
 let imgArray = [];
 let cardBody = [];
